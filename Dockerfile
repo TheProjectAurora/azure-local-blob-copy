@@ -6,6 +6,8 @@ RUN set -xe && \
         python3 \
         py3-pip && \
     cd /tmp && git clone https://github.com/TheProjectAurora/azure-local-blob-copy.git &&\
+    cp /tmp/azure-local-blob-copy/src/azure-copy-tool.py /usr/bin/azure-copy-tool.py && \
+    chmod a+rx /usr/bin/azure-copy-tool.py && \
     apk add --no-cache \ 
         gcc \
         python3-dev \
@@ -19,4 +21,5 @@ RUN set -xe && \
         python3-dev \
         musl-dev \
         libffi-dev \
-        libressl-dev
+        libressl-dev && \
+        rm -rf /tmp/azure-local-blob-copy
