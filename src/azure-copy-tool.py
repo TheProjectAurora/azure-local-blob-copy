@@ -30,6 +30,18 @@ def help():
         
     """)
 
+def check_environment_variables():
+    mandatory = [
+        'AZURE_STORAGE_CONNECTION_STRING',
+        'SOURCE_DIRECTORY',
+        'AZURE_STORAGE_CONTAINER'
+    ]
+
+    for variable in mandatory:
+        if variable not in os.environ:
+            print(f'The environment variable {variable} is missing.')
+            exit(1)
+
 Files = List[str]
 
 def get_files(path : str, current_list : Files = [] ) -> Files:
@@ -73,6 +85,7 @@ def sanitize_destination(path : str) -> str:
 
 
 def main():
+    check_environment_variables()
     connection_string = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
     source_dir = os.getenv("SOURCE_DIRECTORY")
     contaner_name = os.getenv("AZURE_STORAGE_CONTAINER")
