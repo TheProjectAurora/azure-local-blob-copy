@@ -1,5 +1,10 @@
 FROM alpine:3.13.0
 
+ARG USER=notroot
+ARG GROUP=notroot
+ARG UID=1000
+ARG GID=1000
+
 RUN set -xe && \
     apk add --no-cache \
         git \
@@ -22,4 +27,14 @@ RUN set -xe && \
         musl-dev \
         libffi-dev \
         libressl-dev && \
-        rm -rf /tmp/azure-local-blob-copy
+    rm -rf /tmp/azure-local-blob-copy && \
+    apk upgrade --no-cache && \
+    addgroup -g ${GID} -S ${GROUP} && \
+    adduser -u ${UID} -S -D ${USER} ${GROUP}
+
+COPY --chown=${USER} src/azure-copy-tool.py /azure-copy-tool.py
+WORKDIR /home/${USER}
+USER ${USER}
+RUN chmod +x /azure-copy-tool.py
+
+ENTRYPOINT /usr/bin/python3 /azure-copy-tool.py
