@@ -73,13 +73,15 @@ def upload_files(source_dir : str,
         target_name=join(destination, file[path_end_position:])
         print(f"Copying file {file} to {target_name}")
         with open(file, "rb") as data:
-           blob_client = container_client.upload_blob(name=target_name, data=data)
+           blob_client = container_client.upload_blob(name=target_name, data=data, overwrite=True)
         
 def sanitize_destination(path : str) -> str:
     """ Function removes the leading / characters. They're
         messing up the directory structure.         
     """
-    while path[0] == '/':
+    if not path:
+        path = ""
+    while len(path) > 0 and path[0] == '/':
         path = path[1:]
     return path
 
@@ -90,9 +92,6 @@ def main():
     source_dir = os.getenv("SOURCE_DIRECTORY")
     contaner_name = os.getenv("AZURE_STORAGE_CONTAINER")
     destination_directory = sanitize_destination( os.getenv("DESTINATION_DIRECTORY"))
-    
-    if not destination_directory:
-        destination_directory=''
     blob_service_client = BlobServiceClient.from_connection_string(connection_string)
     files = get_files(source_dir)
     upload_files(source_dir, files, connection_string, contaner_name, destination_directory)
