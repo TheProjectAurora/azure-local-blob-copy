@@ -60,10 +60,10 @@ RUN set -xe && \
     addgroup -g ${GID} -S ${GROUP} && \
     adduser -u ${UID} -S -D ${USER} ${GROUP}
 
-COPY --chown=${USER} src/azure-copy-tool.py /azure-copy-tool.py
-WORKDIR /home/${USER}
+COPY --chown=${USER} src/ /app/
+WORKDIR /app
 USER ${USER}
-RUN chmod +x /azure-copy-tool.py
+RUN chmod +x /app/azure-copy-tool.py
 
 ENTRYPOINT echo $(echo ALPINE_VERSION: && /bin/cat /etc/alpine-release) && \
-           /usr/bin/python3 /azure-copy-tool.py
+           /usr/bin/python3 /app/azure-copy-tool.py
