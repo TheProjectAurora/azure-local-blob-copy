@@ -1,7 +1,7 @@
 FROM alpine:latest
 
-ARG USER=notroot
-ARG GROUP=notroot
+ARG USER=nonroot
+ARG GROUP=nonroot
 ARG UID=1000
 ARG GID=1000
 

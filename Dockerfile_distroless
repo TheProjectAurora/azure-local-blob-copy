@@ -6,8 +6,9 @@ RUN pip install -r /tmp/requirements.txt
 # What is distroless: https://medium.com/better-programming/how-to-harden-your-containers-with-distroless-docker-images-c2abd7c71fdb
 # Google Base Images: https://github.com/GoogleContainerTools/distroless/
 FROM gcr.io/distroless/python3-debian10
-COPY src/ /app/
-COPY --from=build /usr/local/lib/python3.7/site-packages /usr/local/lib/python3.7/site-packages
+COPY --chown=nonroot src/ /app/
+COPY --from=build --chown=nonroot /usr/local/lib/python3.7/site-packages /usr/local/lib/python3.7/site-packages
+USER nonroot
 WORKDIR /app
 ENV PYTHONPATH=/usr/local/lib/python3.7/site-packages
 CMD ["/app/azure-copy-tool.py"]
