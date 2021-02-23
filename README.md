@@ -21,6 +21,7 @@ environment variables. Following variables are used:
 * SOURCE_DIRECTORY - The local directory which will be copied.
 * AZURE_STORAGE_CONTAINER - Name of the container.
 * DESTINATION_DIRECTORY - Prefix for the destination.
+* CACHE_CONTROL - String for cache control header. If none, then cache control do not exist.
 
 From the source directory only the last directory is used. So e.g. if the directory is 
 `/home/build/static` then only the `static` part of the directory is used when the exact 

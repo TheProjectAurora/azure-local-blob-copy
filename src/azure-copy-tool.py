@@ -3,8 +3,11 @@
 import os
 from os import listdir
 from os.path import isfile, join, isdir, basename, split
-from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient, __version__
+from azure.storage.blob import ContentSettings, BlobServiceClient, BlobClient, ContainerClient, __version__
+
 from typing import List, Set, Dict, Tuple, Optional
+import mimetypes
+
 
 def help():
     print("""
@@ -66,14 +69,23 @@ def upload_files(source_dir : str,
                  files : Files, 
                  connection_string : str, 
                  container : str, 
-                 destination : str ):
+                 destination : str,
+                 cache_setting : str ):
     path_end_position = len(get_prefix('.'+source_dir))
     container_client = BlobServiceClient.from_connection_string(connection_string).get_container_client(container)
     for file in files:
         target_name=join(destination, file[path_end_position:])
-        print(f"Copying file {file} to {target_name}")
+        mimetype = mimetypes.guess_type(file)[0]
+
+        print(f"Copying file {file} to {target_name} of type {mimetype}")
         with open(file, "rb") as data:
-           blob_client = container_client.upload_blob(name=target_name, data=data, overwrite=True)
+           blob_client = container_client.upload_blob(name=target_name, 
+                                                      data=data, 
+                                                      overwrite=True,
+                                                      content_settings=ContentSettings(
+                                                        content_type=mimetype,
+                                                        cache_control = cache_setting)
+                                                    )
         
 def sanitize_destination(path : str) -> str:
     """ Function removes the leading / characters. They're
@@ -92,9 +104,10 @@ def main():
     source_dir = os.getenv("SOURCE_DIRECTORY")
     contaner_name = os.getenv("AZURE_STORAGE_CONTAINER")
     destination_directory = sanitize_destination( os.getenv("DESTINATION_DIRECTORY"))
+    cache_setting = os.getenv("CACHE_CONTROL")
     blob_service_client = BlobServiceClient.from_connection_string(connection_string)
     files = get_files(source_dir)
-    upload_files(source_dir, files, connection_string, contaner_name, destination_directory)
+    upload_files(source_dir, files, connection_string, contaner_name, destination_directory, cache_setting)
     
 
 
